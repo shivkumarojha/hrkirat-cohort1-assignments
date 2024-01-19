@@ -8,7 +8,22 @@
 */
 
 function isAnagram(str1, str2) {
-
+  let isAnagramString = ""
+  for(let i=0; i < str1.length; i++) {
+    for(let j=0; j < str2.length; j++) {
+      if(str2[j] === str1[i]) {
+        isAnagramString += str2[j]
+      }
+    }
+  }
+  console.log(isAnagramString)
+  if (str1.length == str2.length && str1 === isAnagramString ) {
+    return true
+  } else {
+    return false
+  }
 }
 
+let answer = isAnagram("Debit Card", "Bad Credit")
+console.log(answer)
 module.exports = isAnagram;
