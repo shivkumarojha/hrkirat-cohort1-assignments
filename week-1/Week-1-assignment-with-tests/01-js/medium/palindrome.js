@@ -6,8 +6,35 @@
   - `npm run test-palindrome`
 */
 
-function isPalindrome(str) {
-  return true;
+function transformStr(str) {
+  let lowerCaseStr = str.toLowerCase()
+  let trimmedString = ""
+  for(let i=0; i<lowerCaseStr.length; i++) {
+    if (
+      lowerCaseStr[i] === " " ||
+      lowerCaseStr[i] === "," ||
+      lowerCaseStr[i] === "!" ||
+      lowerCaseStr[i] === "?" ||
+      lowerCaseStr[i] === "'" ||
+      lowerCaseStr[i] === "."
+    ) {
+    } else {
+      trimmedString += lowerCaseStr[i];
+    }
+  }
+  console.log(trimmedString)
+  return trimmedString
 }
+function isPalindrome(str) {
+  let transformedString = transformStr(str)
+  let reversedString = ""
+  for(let i=transformedString.length-1; i>=0; i-- ) {
+    reversedString += transformedString[i]
+  }
+  return reversedString === transformedString
+}
+
+let result = isPalindrome("'Eva, can I see bees in a cave?'");
+console.log(result)
 
 module.exports = isPalindrome;
