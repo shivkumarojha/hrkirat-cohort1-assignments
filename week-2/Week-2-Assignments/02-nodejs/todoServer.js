@@ -41,9 +41,83 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const {v4:uuid4} = require('uuid')
 const app = express();
 
 app.use(bodyParser.json());
 
+const todos = []
+
+// Get all todos
+app.get('/todos', (req, res) => {
+  res.json(todos)
+})
+
+// Add a todo
+app.post('/todos', (req, res) => {
+  const uniqueId = uuid4()
+  const todoTitle = req.body.title
+  const todoDescription = req.body.description
+  const completed = false
+  const newTodo = {
+    id: uniqueId,
+    title: todoTitle,
+    description: todoDescription,
+    completed: false
+  }
+  todos.push(newTodo)
+  res.status(201).json({id: uniqueId})
+})
+
+// Get todo by id
+app.get('/todos/:id', (req, res) => {
+  let uniqueId = req.params.id
+
+  // Check if the todo is in todos
+  for(let i = 0; i < todos.length; i++) {
+    if(todos[i].id === uniqueId) {
+      res.send(todos[i])
+      return
+    }
+  }
+
+  // If the todo is not found in the todos 
+  res.status(404).send(`Todo Not found with the id - ${uniqueId}`)
+})
+
+
+// Update a single todo
+app.put('/todos/:id', (req, res) => {
+  const todoId = req.params.id
+  const todoUpdatedTitle = req.body.title
+  const todoUpdatedDescription = req.body.description
+  const isCompletedStatus = req.body.completed
+  for(let i=0; i < todos.length; i++){
+    if(todos[i].id === todoId) {
+      todos[i].title = todoUpdatedTitle
+      todos[i].description = todoUpdatedDescription
+      todos[i].completed = isCompletedStatus
+      res.status(200).send("todo item updated")
+      return
+    }  
+    res.status(404).send("Todo item not fond")
+  }
+})
+
+// Delete a todo item
+app.delete('/todos/:id', (req, res) => {
+  const uniqueId = req.params.id
+  for(let i=0; i < todos.length; i++) {
+    if(todos[i].id === uniqueId) {
+      todos.splice(i, 1)
+      res.status(200).send("deleted todo item")
+      return
+    }
+
+  }
+  res.status(404).send("todo item not found")
+})
+app.listen(2000, () => {
+  console.log("Server is started")
+})
 module.exports = app;
