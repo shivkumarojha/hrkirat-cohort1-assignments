@@ -21,10 +21,10 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+let pathOfFiles = './files'
 // Get the file name inside folder
 app.get('/files', (req, res) => {
-  pathOfFile = './files'
-  const listOfFiles = fs.readdir(pathOfFile, 'utf8', (err, files) => {
+  const listOfFiles = fs.readdir(pathOfFiles, 'utf8', (err, files) => {
     if(err) {
       res.status(404).send("Some Error occured")
       return
@@ -33,6 +33,27 @@ app.get('/files', (req, res) => {
   })
 })
 
+// Get the content of file
+app.get('/files/:fileName', (req, res) => {
+  const fileName = req.params.fileName
+  fs.readdir(pathOfFiles, 'utf8', (err, files) => {
+    if(err) {
+      res.status(404).send("Some error occured")
+      return
+    }
+    for(let i=0; i < files.length; i++) {
+      if(files[i] === fileName) {
+        fs.readFile(`${pathOfFiles}/${files[i]}`, 'utf8', (err, data) => {
+          if(err) {
+            res.send("Some Error occured during reading of file")
+            return
+          }
+          res.status(200).send(data)
+        })
+      }
+    }
+  })
+})
 app.listen(3000, () => {
   console.log("Started server")
 })
