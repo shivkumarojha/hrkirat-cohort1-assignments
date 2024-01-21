@@ -21,5 +21,19 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+// Get the file name inside folder
+app.get('/files', (req, res) => {
+  pathOfFile = './files'
+  const listOfFiles = fs.readdir(pathOfFile, 'utf8', (err, files) => {
+    if(err) {
+      res.status(404).send("Some Error occured")
+      return
+    }
+    res.status(200).json(files)
+  })
+})
 
+app.listen(3000, () => {
+  console.log("Started server")
+})
 module.exports = app;
