@@ -41,20 +41,26 @@ app.get('/files/:fileName', (req, res) => {
       res.status(404).send("Some error occured")
       return
     }
+    let fileFound = false
     for(let i=0; i < files.length; i++) {
       if(files[i] === fileName) {
+        fileFound = true
         fs.readFile(`${pathOfFiles}/${files[i]}`, 'utf8', (err, data) => {
           if(err) {
             res.send("Some Error occured during reading of file")
             return
           }
           res.status(200).send(data)
+          return
         })
       }
     }
+    if(!fileFound) {
+      res.status(404).send("File Not found")
+    }
   })
 })
-app.listen(3000, () => {
+app.listen(2000, () => {
   console.log("Started server")
 })
 module.exports = app;
