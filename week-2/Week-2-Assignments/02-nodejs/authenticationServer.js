@@ -63,7 +63,7 @@ app.post('/signup', (req, res) => {
       lastName: lastName
     }
     users.push(user)
-    res.status(201).send("User is successfully created")
+    res.status(201).send("Signup successful");
   }
 })
 
@@ -113,7 +113,7 @@ app.get('/data', (req, res) => {
     res.status(200).json(allUsers)
     return
   }else {
-    res.status(401).send("Unauthorized, user credentials doesn't mathed")
+    res.status(401).send("Unauthorized")
   }
 })
 
