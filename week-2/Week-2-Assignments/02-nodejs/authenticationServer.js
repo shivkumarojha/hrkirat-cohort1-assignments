@@ -67,5 +67,28 @@ app.post('/signup', (req, res) => {
   }
 })
 
+//  Login users
+app.post('/login', (req, res) => {
+  const userName = req.body.userName
+  const password = req.body.password
+  
+  let userExist = false
+  // Check if user exist in the users array
+  for(let i=0; i < users.length; i++) {
+    if(users[i].userName === userName && users[i].password === password) {
+      userExist = true
+      res.status(200).json({userId: users[i].userId})
+      return
+    }
+  }
+
+  if(!userExist) {
+    res.status(401).send("Unauthorized, credentials are invalid")
+  }
+})
+
+
+
+
 app.listen(PORT, () => console.log("Server is running..."))
 module.exports = app;
