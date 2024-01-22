@@ -87,8 +87,35 @@ app.post('/login', (req, res) => {
   }
 })
 
+// Get Users Data
+app.get('/data', (req, res) => {
+  const userName = req.headers.username
+  const password = req.headers.password
+  
+  let userExist = false
+  for(let i = 0; i < users.length; i++) {
+    if(users[i].userName === userName && users[i].password === password) {
+      userExist = true
+      
+    }
+  }
+  if(userExist) {
+    let allUsers = []
+    for(let i = 0; i < users.length; i++) {
+      const userData = {
+        userName: users[i].userName,
+        firstName: users[i].firstName,
+        lastName: users[i].lastName,
+      };
+      allUsers.push(userData)
 
-
+    }
+    res.status(200).json(allUsers)
+    return
+  }else {
+    res.status(401).send("Unauthorized, user credentials doesn't mathed")
+  }
+})
 
 app.listen(PORT, () => console.log("Server is running..."))
 module.exports = app;
