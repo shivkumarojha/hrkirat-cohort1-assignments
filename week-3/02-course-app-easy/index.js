@@ -69,6 +69,7 @@ app.post('/admin/courses', authenticateAdmin, (req, res) => {
   }
   });
 
+// Edit a course
 app.put('/admin/courses/:courseId', authenticateAdmin, (req, res) => {
   const updatedCourse = req.body
   const courseId = req.params.courseId
@@ -88,7 +89,15 @@ app.get('/admin/courses', authenticateAdmin, (req, res) => {
 
 // User routes
 app.post('/users/signup', (req, res) => {
-  // logic to sign up user
+  const user = req.body
+  const userExist = USERS.find(u => u.username === user.username)
+  if(userExist) {
+    return res.status(403).json({message: "User already exists!"})
+  }else {
+    USERS.push(user)
+    res.status(200).json({message: "User created successfully."})
+  }
+  
 });
 
 app.post('/users/login', (req, res) => {
