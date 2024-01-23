@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const {v4: uuid4} = require('uuid')
 app.use(express.json());
 
 let ADMINS = [];
@@ -46,11 +46,13 @@ app.post('/admin/login', authenticateAdmin,(req, res) => {
   res.status(200).json({message: "Admin logged in successfully"})
 });
 
+// Create new course
 app.post('/admin/courses', authenticateAdmin, (req, res) => {
   // { title: 'course title', description: 'course description', price: 100, imageLink: 'https://linktoimage.com', published: true }
   
   const course = req.body
-
+  const courseId = uuid4()
+  course["courseId"] = courseId
   // Check if the course title is not empty
   if(!course.title) {
     return res.status(303).json({message: "Can't add a course with empty title"})
@@ -67,12 +69,21 @@ app.post('/admin/courses', authenticateAdmin, (req, res) => {
   }
   });
 
-app.put('/admin/courses/:courseId', (req, res) => {
-  // logic to edit a course
+app.put('/admin/courses/:courseId', authenticateAdmin, (req, res) => {
+  const updatedCourse = req.body
+  const courseId = req.params.courseId
+  const course = COURSES.find(c => c.courseId === courseId)
+  if(course) {
+    Object.assign(course, updatedCourse)
+    res.status(200).json({message: "Course updated successfully"})
+    return
+  }else{
+    res.status(404).send("Course does not exist") 
+  }
 });
 
-app.get('/admin/courses', (req, res) => {
-  // logic to get all courses
+app.get('/admin/courses', authenticateAdmin, (req, res) => {
+  res.status(200).json(COURSES)
 });
 
 // User routes
