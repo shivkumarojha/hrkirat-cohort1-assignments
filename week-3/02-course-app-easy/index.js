@@ -46,9 +46,26 @@ app.post('/admin/login', authenticateAdmin,(req, res) => {
   res.status(200).json({message: "Admin logged in successfully"})
 });
 
-app.post('/admin/courses', (req, res) => {
-  // logic to create a course
-});
+app.post('/admin/courses', authenticateAdmin, (req, res) => {
+  // { title: 'course title', description: 'course description', price: 100, imageLink: 'https://linktoimage.com', published: true }
+  
+  const course = req.body
+
+  // Check if the course title is not empty
+  if(!course.title) {
+    return res.status(303).json({message: "Can't add a course with empty title"})
+  }
+
+  // Check if course exist with same title 
+  const courseExist = COURSES.find(c => c.title === course.title )
+  
+  if(courseExist) {
+    return res.status(403).send("Course already exists!")
+  }else{
+    COURSES.push(course)
+    res.status(201).json({message: "Course added successfully", courses: COURSES})
+  }
+  });
 
 app.put('/admin/courses/:courseId', (req, res) => {
   // logic to edit a course
