@@ -94,6 +94,7 @@ app.post('/users/signup', (req, res) => {
   if(userExist) {
     return res.status(403).json({message: "User already exists!"})
   }else {
+    user["purchasedCourses"] = []
     USERS.push(user)
     res.status(200).json({message: "User created successfully."})
   }
@@ -116,16 +117,29 @@ app.post('/users/login', authenticateUser, (req, res) => {
   res.json({message: `Succesfully logged in ${req.user.username}`})
 });
 
-app.get('/users/courses', (req, res) => {
-  // logic to list all courses
+app.get('/users/courses', authenticateUser, (req, res) => {
+  res.status(200).json(COURSES)
 });
 
-app.post('/users/courses/:courseId', (req, res) => {
-  // logic to purchase a course
+app.post('/users/courses/:courseId', authenticateUser, (req, res) => {
+  const courseId = req.params.courseId
+  const course = COURSES.find(c => c.courseId === courseId)
+
+  if(course) {
+    const username = req.headers.username
+    const user = USERS.find(u => u.username === username)
+    user.purchasedCourses.push(course)
+    res.status(200).json({message: "Course purchased successfully"})
+  }else{
+    res.status(404).json({message: "course doesn't exist"})
+  }
+
 });
 
-app.get('/users/purchasedCourses', (req, res) => {
-  // logic to view purchased courses
+app.get('/users/purchasedCourses', authenticateUser, (req, res) => {
+  const username = req.headers.username
+  const user = USERS.find(u => u.username === username)
+  res.status(200).json({numberOfCourses: user.purchasedCourses.length,purchasedCourses: user.purchasedCourses})
 });
 
 app.listen(3000, () => {
