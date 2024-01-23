@@ -100,8 +100,20 @@ app.post('/users/signup', (req, res) => {
   
 });
 
-app.post('/users/login', (req, res) => {
-  // logic to log in user
+// user authentication middleware
+const authenticateUser  = (req, res, next) => {
+  const user = req.headers
+  const userExist = USERS.find(u => u.username === user.username && u.password === user.password)
+
+  if(userExist) {
+    req.user = user
+    next()
+  }else{
+    return res.status(403).send("Unauthorized")
+  }
+}
+app.post('/users/login', authenticateUser, (req, res) => {
+  res.json({message: `Succesfully logged in ${req.user.username}`})
 });
 
 app.get('/users/courses', (req, res) => {
