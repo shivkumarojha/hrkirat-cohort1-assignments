@@ -7,43 +7,13 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
-// Admin authentication middleware
-const authenticateAdmin = (req, res, next) => {
-  const {username, password} = req.headers
-
-  const adminExist = ADMINS.find(admin => admin.username === username && admin.password === password)
-
-  if(adminExist) {
-      next()
-    }else {
-      res.status(401).json({message: "Admin doesn't exists!"})
-    }
-  }
-  
-
 // Admin routes
 app.post('/admin/signup', (req, res) => {
-  const username = req.body.username
-  const password = req.body.password
-  let adminExist = false
-  for (let i = 0; i < ADMINS.length; i++) {
-    if(ADMINS[i].username === username) {
-      adminExist = true
-    }
-  }
-  if(adminExist){
-    res.status(401).send("Admin exists!")
-  }else {
-    ADMINS.push({
-      username: username,
-      password: password
-    })
-    res.status(200).json({message: "Admin created successfully"})
-  }
+  // logic to sign up admin
 });
 
-app.post('/admin/login', authenticateAdmin,(req, res) => {
-  res.status(200).json({message: "Admin logged in successfully"})
+app.post('/admin/login', (req, res) => {
+  // logic to log in admin
 });
 
 app.post('/admin/courses', (req, res) => {
