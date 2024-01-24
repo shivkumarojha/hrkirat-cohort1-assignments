@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken')
 
+const {v4: uuid4} = require('uuid')
 const mongoose = require('mongoose')
 app.use(express.json());
 
@@ -85,8 +86,38 @@ app.post('/admin/login', async(req, res) => {
    }
 });
 
-app.post('/admin/courses', (req, res) => {
-  // logic to create a course
+// Authenticate admin middleware
+const authenticateAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    jwt.verify(token, secretForAdmin, (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: "Unauthorized" });
+      } else {
+        req.user = user;
+        next();
+      }
+    });
+  }
+};
+
+app.post('/admin/courses', authenticateAdmin, async(req, res) => {
+  const course = req.body;
+  const courseId = uuid4();
+  if (!course.title) {
+    return res.status(401).json({ message: "Can't add courses without title" });
+  }
+  title = course.title
+  const courseExist = await Course.findOne({title})
+  if (courseExist) {
+    return res.send("Course with same title exists");
+  } else {
+    course["courseId"] = courseId;
+    const newCourse = new Course({...course})
+    newCourse.save()
+    res.status(200).json({ message: "Course Added successfully" });
+  }
 });
 
 app.put('/admin/courses/:courseId', (req, res) => {
