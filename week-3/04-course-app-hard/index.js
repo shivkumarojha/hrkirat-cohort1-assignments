@@ -72,8 +72,17 @@ app.post('/admin/signup', async(req, res) => {
 });
 
 
-app.post('/admin/login', (req, res) => {
-  // logic to log in admin
+app.post('/admin/login', async(req, res) => {
+   const { username, password } = req.body;
+   const isAdminExist = await Admin.findOne({username, password})
+   if (isAdminExist) {
+     const token = generateJwtTokenAdmin(username);
+     res
+       .status(200)
+       .json({ message: "Admin logged in successfully", token: token });
+   } else {
+     res.status(403).json({ message: "Unauthorized" });
+   }
 });
 
 app.post('/admin/courses', (req, res) => {
