@@ -52,7 +52,8 @@ const Admin = mongoose.model('Admin', adminSchema)
 const Course = mongoose.model('Course', courseSchema)
 
 // Connect to mongodb cluster
-mongoose.connect('mongodb+srv://shivkumarojha:shiva%40321%23@cluster0.0xxo9rh.mongodb.net/courses')
+// mongoose.connect('mongodb+srv://shivkumarojha:shiva%40321%23@cluster0.0xxo9rh.mongodb.net/courses')
+mongoose.connect('mongodb://localhost:27017/courses')
 // Admin routes
 app.post('/admin/signup', async(req, res) => {
   const { username, password } = req.body;
@@ -113,15 +114,22 @@ app.post('/admin/courses', authenticateAdmin, async(req, res) => {
   if (courseExist) {
     return res.send("Course with same title exists");
   } else {
-    course["courseId"] = courseId;
     const newCourse = new Course({...course})
     newCourse.save()
     res.status(200).json({ message: "Course Added successfully" });
   }
 });
 
-app.put('/admin/courses/:courseId', (req, res) => {
-  // logic to edit a course
+app.put('/admin/courses/:courseId', authenticateAdmin, async(req, res) => {
+  const updatedCourse = req.body;
+  const courseId = req.params.courseId;
+  const course =  await Course.findOne({ _id: courseId })
+  if (course) {
+    const updateCourse = await Course.findByIdAndUpdate(courseId, updatedCourse, {new: true})
+    return res.status(200).json({ message: "Course Updated successfull" });
+  } else {
+    res.status(404).send("Doesn't find any course with course id");
+  }
 });
 
 app.get('/admin/courses', (req, res) => {
