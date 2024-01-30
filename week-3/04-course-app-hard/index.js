@@ -132,8 +132,13 @@ app.put('/admin/courses/:courseId', authenticateAdmin, async(req, res) => {
   }
 });
 
-app.get('/admin/courses', (req, res) => {
-  // logic to get all courses
+app.get('/admin/courses',authenticateAdmin , async(req, res) => {
+  const courses = await Course.find()
+  if(courses) {
+    res.status(200).json(courses)
+  }else {
+    res.status(404).json({message: "No courses Found"})
+  }
 });
 
 // User routes
